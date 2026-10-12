@@ -1,0 +1,92 @@
+/* Prayaas Gurukul — Core Theme & Brand Stylesheet */
+
+:root {
+--prayaas-primary: #5B3BE8;
+--prayaas-primary-hover: #4C2FD4;
+--prayaas-primary-light: #EDE9FE;
+--prayaas-gradient: linear-gradient(135deg, #7C3AED 0%, #5B3BE8 50%, #4328A6 100%);
+--prayaas-gradient-card: linear-gradient(135deg, #6D28D9 0%, #5B3BE8 100%);
+--prayaas-gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+--prayaas-gradient-silver: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+--prayaas-gradient-bronze: linear-gradient(135deg, #D97706 0%, #92400E 100%);
+--surface-bg: #F8F9FD;
+--surface-card: #FFFFFF;
+--text-primary: #0F172A;
+--text-secondary: #64748B;
+--radius-card: 1.25rem;
+}
+
+body {
+background-color: var(--surface-bg);
+color: var(--text-primary);
+font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+-webkit-tap-highlight-color: transparent;
+}
+
+/* Scrollbar tweaks */
+.hide-scrollbar::-webkit-scrollbar {
+display: none;
+}
+.hide-scrollbar {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(8px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes slideUp {
+from {
+opacity: 0;
+transform: translateY(100%);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.animate-fade-in {
+animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Nav Item Styling */
+.nav-btn {
+position: relative;
+outline: none;
+}
+
+.nav-btn.active {
+color: var(--prayaas-primary);
+}
+
+.nav-btn.active .nav-icon-box i {
+font-weight: 800;
+transform: scale(1.12);
+}
+
+.nav-btn.active::after {
+content: '';
+position: absolute;
+top: 0;
+left: 50%;
+transform: translateX(-50%);
+width: 28px;
+height: 3px;
+border-radius: 9999px;
+background-color: var(--prayaas-primary);
+box-shadow: 0 2px 8px rgba(91, 59, 232, 0.4);
+}

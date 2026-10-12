@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayaas Gurukul — Admin Console</title>
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon.ico">
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons CDN -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    
+    <!-- Tailwind CSS with custom Purple theme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        prayaas: {
+                            50: '#F5F3FF',
+                            100: '#EDE9FE',
+                            200: '#DDD6FE',
+                            300: '#C4B5FD',
+                            400: '#A78BFA',
+                            500: '#8B5CF6',
+                            600: '#7C3AED',
+                            700: '#6D28D9',
+                            800: '#5B3BE8',
+                            900: '#4328A6',
+                            950: '#1E1035'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom scrollbar and animations */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        .sidebar-link.active {
+            background-color: #5B3BE8;
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(91, 59, 232, 0.25);
+        }
+        .sidebar-link.active i {
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FD] text-gray-900 font-sans antialiased min-h-screen flex flex-col md:flex-row">
+
+    <!-- SIDEBAR -->
+    <aside id="admin-sidebar" class="w-full md:w-64 bg-white border-r border-gray-200/80 p-5 flex flex-col justify-between shrink-0 fixed md:sticky top-0 h-auto md:h-screen z-40 transition-transform">
+        <div>
+            <!-- Branding -->
+            <div class="flex items-center gap-3 pb-6 border-b border-gray-100">
+                <div class="w-11 h-11 rounded-2xl bg-prayaas-50 border border-prayaas-100 flex items-center justify-center p-1 overflow-hidden shrink-0">
+                    <img src="../assets/img/logo.png" alt="PG Logo" class="w-full h-full object-contain" onerror="this.parentElement.innerHTML='<span class=\'font-black text-prayaas-800 text-sm\'>PG</span>';">
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-gray-900 tracking-tight leading-tight">Prayaas Gurukul</h1>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-prayaas-700 bg-prayaas-50 px-2 py-0.5 rounded-md">Admin Console</span>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="mt-6 space-y-1.5" id="sidebar-nav">
+                <button onclick="navigateTo('dashboard')" id="link-dashboard" class="sidebar-link active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-squares-four text-lg text-gray-400"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="navigateTo('students')" id="link-students" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-student text-lg text-gray-400"></i>
+                    <span>Students Master</span>
+                </button>
+                <button onclick="navigateTo('tests')" id="link-tests" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-exam text-lg text-gray-400"></i>
+                    <span>Tests & Exams</span>
+                </button>
+                <button onclick="navigateTo('importer')" id="link-importer" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-file-arrow-up text-lg text-gray-400"></i>
+                    <span>TXT Question Parser</span>
+                </button>
+                <button onclick="navigateTo('content')" id="link-content" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-folder-open text-lg text-gray-400"></i>
+                    <span>Videos & DPPs</span>
+                </button>
+                <button onclick="navigateTo('suspensions')" id="link-suspensions" class="sidebar-link w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <div class="flex items-center gap-3">
+                        <i class="ph ph-shield-warning text-lg text-gray-400"></i>
+                        <span>Suspensions Desk</span>
+                    </div>
+                    <span id="badge-suspensions" class="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-50 text-rose-600">2</span>
+                </button>
+                <button onclick="navigateTo('leaderboard')" id="link-leaderboard" class="sidebar-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition">
+                    <i class="ph ph-trophy text-lg text-gray-400"></i>
+                    <span>Leaderboard Control</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Admin Profile / Logout Footer -->
+        <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-prayaas-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                    AD
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs font-extrabold text-gray-800 truncate">Administrator</p>
+                    <p class="text-[10px] font-semibold text-emerald-600">System Live</p>
+                </div>
+            </div>
+            <button onclick="adminLogout()" title="Logout" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-rose-600 transition">
+                <i class="ph ph-sign-out text-lg"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <!-- Top App Bar -->
+        <header class="bg-white/90 backdrop-blur-md border-b border-gray-200/80 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <div class="flex items-center gap-3">
+                <h2 id="top-section-title" class="text-lg font-extrabold text-gray-900 tracking-tight">Admin Dashboard</h2>
+                <span class="text-[11px] font-bold text-prayaas-700 bg-prayaas-50 px-2.5 py-0.5 rounded-full border border-prayaas-100">Hostinger Ready</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="triggerQuickRebuild()" class="inline-flex items-center gap-1.5 bg-prayaas-50 hover:bg-prayaas-100 text-prayaas-700 px-3 py-1.5 rounded-xl font-bold text-xs border border-prayaas-200 transition">
+                    <i class="ph ph-arrows-clockwise text-base"></i>
+                    <span>Sync Cron / Ranks</span>
+                </button>
+                <a href="../index.html" target="_blank" class="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-black text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition">
+                    <i class="ph ph-arrow-square-out text-base"></i>
+                    <span>Open Student PWA</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- View Mount Area -->
+        <section id="admin-view-mount" class="p-6 space-y-6">
+            <!-- Dynamic Admin Content Injected Here -->
+        </section>
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="admin-toast" class="fixed bottom-6 right-6 bg-gray-900 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i id="toast-icon" class="ph ph-check-circle text-emerald-400 text-base"></i>
+        <span id="toast-text">Action Completed Successfully!</span>
+    </div>
+
+    <script>
+        /**
+         * Prayaas Gurukul — Admin Panel Engine (Phase 2)
+         * Zero-build native architecture, local state management, 
+         * and automated TXT Question Parser.
+         */
+
+        const ADMIN_STATE = {
+            currentView: 'dashboard',
+            
+            // Stats
+            stats: {
+                totalStudents: 142,
+                class6: 38,
+                class9: 46,
+                class10: 58,
+                activeTests: 4,
+                pendingSuspensions: 2
+            },
+
+            // Student Master
+            students: [
+                { id: "PG-10-108", name: "Rahul Verma", class: 10, status: "active", testsDone: 14, avgScore: 84.5 },
+                { id: "PG-10-101", name: "Aarav Sharma", class: 10, status: "active", testsDone: 15, avgScore: 96.4 },
+                { id: "PG-10-102", name: "Isha Patel", class: 10, status: "active", testsDone: 15, avgScore: 94.8 },
+                { id: "PG-09-204", name: "Devansh Roy", class: 9, status: "active", testsDone: 16, avgScore: 95.2 },
+                { id: "PG-06-310", name: "Ananya Dixit", class: 6, status: "active", testsDone: 8, avgScore: 88.0 },
+                { id: "PG-10-115", name: "Kunal Bansal", class: 10, status: "disabled", testsDone: 11, avgScore: 77.0 }
+            ],
+
+            // Tests Master
+            tests: [
+                { id: 101, title: "Board Booster Science Mock Test #03", class: 10, subject: "Science", duration: 30, totalMarks: 40, status: "published", questionsCount: 5 },
+                { id: 102, title: "Maths: Quadratic Equations & AP Blitz", class: 10, subject: "Mathematics", duration: 45, totalMarks: 50, status: "draft", questionsCount: 20 },
+                { id: 103, title: "Class 9 Motion & Gravitation Test", class: 9, subject: "Physics", duration: 25, totalMarks: 30, status: "published", questionsCount: 15 },
+                { id: 104, title: "Class 6 Basic Mathematics & Reasoning", class: 6, subject: "Maths", duration: 20, totalMarks: 25, status: "published", questionsCount: 10 }
+            ],
+
+            // Content: Videos & DPPs
+            videos: [
+                { id: 1, title: "Light: Reflection & Refraction Concept 01", class: 10, subject: "Physics", youtubeId: "kJQP7kiw5Fk" },
+                { id: 2, title: "Chemical Reactions & Equations One Shot", class: 10, subject: "Chemistry", youtubeId: "L_LUpnjgPso" }
+            ],
+            dpps: [
+                { id: 1, title: "Electricity & Circuit Laws - DPP 04", class: 10, subject: "Physics", fileName: "dpp_elec_04.pdf", size: "1.2 MB" },
+                { id: 2, title: "Class 9 Matter In Our Surroundings DPP", class: 9, subject: "Chemistry", fileName: "dpp_matter_09.pdf", size: "840 KB" }
+            ],
+
+            // Pending Suspensions from Student Test-Guard
+            suspensions: [
+                { id: 501, studentId: "PG-10-112", studentName: "Rohan Gupta", class: 10, testTitle: "Board Booster Science Mock #03", reason: "Tab switched 3 times (Blur violation)", time: "12 mins ago", status: "pending" },
+                { id: 502, studentId: "PG-09-208", studentName: "Sameer Sen", class: 9, testTitle: "Class 9 Motion Test", reason: "Window minimized / App closed", time: "34 mins ago", status: "pending" }
+            ],
+
+            // Parsed questions buffer
+            importedQuestionsBuffer: []
+        };
+
+        // Navigation Controller
+        function navigateTo(viewId) {
+            ADMIN_STATE.currentView = viewId;
+            document.querySelectorAll('.sidebar-link').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('link-' + viewId);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const titleMap = {
+                dashboard: 'Admin Dashboard',
+                students: 'Students Directory & Enrolment',
+                tests: 'Tests & Scheduled Exams',
+                importer: 'Bulk Question Importer (.txt parser)',
+                content: 'DPP PDFs & Video Lecture Bank',
+                suspensions: 'Test Violation & Suspension Desk',
+                leaderboard: 'Cron & Real-time Ranking Desk'
+            };
+            document.getElementById('top-section-title').innerText = titleMap[viewId] || 'Admin Console';
+
+            renderCurrentView();
+        }
+
+        // Render Current View
+        function renderCurrentView() {
+            const mount = document.getElementById('admin-view-mount');
+            const v = ADMIN_STATE.currentView;
+
+            if (v === 'dashboard') renderDashboardView(mount);
+            else if (v === 'students') renderStudentsView(mount);
+            else if (v === 'tests') renderTestsView(mount);
+            else if (v === 'importer') renderImporterView(mount);
+            else if (v === 'content') renderContentView(mount);
+            else if (v === 'suspensions') renderSuspensionsView(mount);
+            else if (v === 'leaderboard') renderLeaderboardView(mount);
+        }
+
+        function renderDashboardView(container) {
+            container.innerHTML = `
+                <!-- 4 Quick Stat Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Enrolled</span>
+                            <h3 class="text-2xl font-black text-gray-900 mt-1">${ADMIN_STATE.stats.totalStudents}</h3>
+                            <span class="text-[11px] font-semibold text-emerald-600 mt-1 inline-block">Active batches</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-prayaas-50 text-prayaas-700 flex items-center justify-center text-2xl">
+                            <i class="ph ph-student"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Live & Scheduled</span>
+                            <h3 class="text-2xl font-black text-gray-900 mt-1">${ADMIN_STATE.stats.activeTests}</h3>
+                            <span class="text-[11px] font-semibold text-prayaas-700 mt-1 inline-block">Active Exam Series</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl">
+                            <i class="ph ph-exam"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Violations / Exit</span>
+                            <h3 class="text-2xl font-black text-rose-600 mt-1">${ADMIN_STATE.suspensions.length}</h3>
+                            <span class="text-[11px] font-semibold text-rose-500 mt-1 inline-block">Need Approval</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl">
+                            <i class="ph ph-shield-warning"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Database Health</span>
+                            <h3 class="text-2xl font-black text-emerald-600 mt-1">100%</h3>
+                            <span class="text-[11px] font-semibold text-gray-400 mt-1 inline-block">MySQL InnoDB OK</span>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl">
+                            <i class="ph ph-database"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Distribution -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gray-500">Class 6 Batch</span>
+                            <span class="text-xs font-extrabold text-prayaas-700">${ADMIN_STATE.stats.class6} Students</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: ${(ADMIN_STATE.stats.class6/ADMIN_STATE.stats.totalStudents)*100}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gray-500">Class 9 Batch</span>
+                            <span class="text-xs font-extrabold text-prayaas-700">${ADMIN_STATE.stats.class9} Students</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: ${(ADMIN_STATE.stats.class9/ADMIN_STATE.stats.totalStudents)*100}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gray-500">Class 10 (Board Batch)</span>
+                            <span class="text-xs font-extrabold text-prayaas-700">${ADMIN_STATE.stats.class10} Students</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="bg-prayaas-800 h-2 rounded-full" style="width: ${(ADMIN_STATE.stats.class10/ADMIN_STATE.stats.totalStudents)*100}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fast Actions & Pending Suspensions Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Quick Importer Jump -->
+                    <div class="bg-gradient-to-br from-prayaas-900 to-prayaas-800 p-6 rounded-3xl text-white shadow-xl shadow-prayaas-900/10 flex flex-col justify-between">
+                        <div>
+                            <span class="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-extrabold tracking-wider uppercase">Auto Importer</span>
+                            <h3 class="text-xl font-black mt-3">Upload Question Paper in Seconds</h3>
+                            <p class="text-xs text-prayaas-100 mt-1 leading-relaxed">Paste your raw text file or questions, let the parser build MCQs with options and solutions, and push directly to students.</p>
+                        </div>
+                        <div class="mt-6">
+                            <button onclick="navigateTo('importer')" class="bg-white text-prayaas-900 font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-sm hover:bg-gray-50 transition active:scale-95">
+                                Open TXT Question Parser →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pending Suspensions Preview -->
+                    <div class="bg-white p-5 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-extrabold text-sm text-gray-900">Recent Violations Pending Review</h3>
+                                <button onclick="navigateTo('suspensions')" class="text-xs font-bold text-prayaas-700 hover:underline">View All</button>
+                            </div>
+                            <div class="space-y-2.5">
+                                ${ADMIN_STATE.suspensions.map(s => `
+                                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between text-xs">
+                                        <div>
+                                            <p class="font-bold text-gray-900">${s.studentName} <span class="text-gray-400 font-normal">(${s.studentId})</span></p>
+                                            <p class="text-[11px] text-rose-600 font-medium">${s.reason}</p>
+                                        </div>
+                                        <button onclick="navigateTo('suspensions')" class="px-3 py-1 bg-white border border-gray-200 font-bold text-gray-700 rounded-lg hover:border-prayaas-500 transition">
+                                            Resolve
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-gray-100 mt-3 text-[11px] text-gray-400">
+                            Strict anti-cheating rule: Reattempts require admin approval.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStudentsView(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h3 class="text-base font-extrabold text-gray-900">Students Enrollment Directory</h3>
+                            <p class="text-xs text-gray-500">Student accounts, class lock (6, 9, 10), and status control.</p>
+                        </div>
+                        <button onclick="openAddStudentModal()" class="bg-prayaas-700 hover:bg-prayaas-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                            <i class="ph ph-user-plus text-base"></i> Add New Student
+                        </button>
+                    </div>
+
+                    <!-- Search & Class Filter -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <input type="text" id="student-search-input" oninput="filterStudentsList()" placeholder="Search by name or Roll No..." class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-prayaas-600 focus:bg-white transition flex-1 min-w-[200px]">
+                        <select id="student-class-filter" onchange="filterStudentsList()" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none">
+                            <option value="all">All Classes</option>
+                            <option value="6">Class 6</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                        </select>
+                    </div>
+
+                    <!-- Students Table -->
+                    <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-50/80 text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-gray-100">
+                                <tr>
+                                    <th class="p-3.5">Roll No / ID</th>
+                                    <th class="p-3.5">Student Name</th>
+                                    <th class="p-3.5">Class Batch</th>
+                                    <th class="p-3.5">Tests Taken</th>
+                                    <th class="p-3.5">Avg Score</th>
+                                    <th class="p-3.5">Status</th>
+                                    <th class="p-3.5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body" class="divide-y divide-gray-50">
+                                ${renderStudentRows(ADMIN_STATE.students)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add Student Form Modal -->
+                <div id="add-student-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+                    <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-extrabold text-sm text-gray-900">Enrol New Student</h4>
+                            <button onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-700"><i class="ph ph-x text-lg"></i></button>
+                        </div>
+                        <form onsubmit="handleCreateStudent(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Student Roll No / ID</label>
+                                <input type="text" id="new-std-id" required placeholder="e.g. PG-10-143" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-prayaas-700 focus:bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Full Name</label>
+                                <input type="text" id="new-std-name" required placeholder="e.g. Sahil Verma" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-prayaas-700 focus:bg-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Class Batch</label>
+                                    <select id="new-std-class" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none">
+                                        <option value="6">Class 6</option>
+                                        <option value="9">Class 9</option>
+                                        <option value="10" selected>Class 10</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Initial Password</label>
+                                    <input type="text" id="new-std-pass" required value="prayaas123" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono font-semibold focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="pt-3 flex gap-2">
+                                <button type="button" onclick="closeAddStudentModal()" class="flex-1 py-2.5 rounded-xl border border-gray-200 font-bold text-xs text-gray-600 hover:bg-gray-50">Cancel</button>
+                                <button type="submit" class="flex-1 py-2.5 rounded-xl bg-prayaas-700 hover:bg-prayaas-800 font-extrabold text-xs text-white shadow-sm">Save Student</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStudentRows(list) {
+            return list.map(std => `
+                <tr class="hover:bg-gray-50/50 transition">
+                    <td class="p-3.5 font-mono font-bold text-gray-900">${std.id}</td>
+                    <td class="p-3.5 font-bold text-gray-900">${std.name}</td>
+                    <td class="p-3.5">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-prayaas-50 text-prayaas-800">
+                            Class ${std.class}
+                        </span>
+                    </td>
+                    <td class="p-3.5 font-semibold text-gray-600">${std.testsDone}</td>
+                    <td class="p-3.5 font-bold text-emerald-600">${std.avgScore}%</td>
+                    <td class="p-3.5">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${std.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}">
+                            ${std.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="toggleStudentStatus('${std.id}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-gray-200 hover:border-gray-400 text-gray-700 transition">
+                            ${std.status === 'active' ? 'Disable' : 'Enable'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStudentsList() {
+            const query = document.getElementById('student-search-input').value.toLowerCase();
+            const classFilter = document.getElementById('student-class-filter').value;
+
+            let filtered = ADMIN_STATE.students.filter(s => {
+                const matchQuery = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query);
+                const matchClass = classFilter === 'all' || s.class.toString() === classFilter;
+                return matchQuery && matchClass;
+            });
+
+            document.getElementById('students-table-body').innerHTML = renderStudentRows(filtered);
+        }
+
+        function openAddStudentModal() {
+            const m = document.getElementById('add-student-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeAddStudentModal() {
+            const m = document.getElementById('add-student-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function handleCreateStudent(e) {
+            e.preventDefault();
+            const id = document.getElementById('new-std-id').value.trim();
+            const name = document.getElementById('new-std-name').value.trim();
+            const cls = parseInt(document.getElementById('new-std-class').value);
+
+            ADMIN_STATE.students.unshift({
+                id: id,
+                name: name,
+                class: cls,
+                status: "active",
+                testsDone: 0,
+                avgScore: 0.0
+            });
+
+            ADMIN_STATE.stats.totalStudents++;
+            if (cls === 6) ADMIN_STATE.stats.class6++;
+            else if (cls === 9) ADMIN_STATE.stats.class9++;
+            else if (cls === 10) ADMIN_STATE.stats.class10++;
+
+            closeAddStudentModal();
+            renderStudentsView(document.getElementById('admin-view-mount'));
+            showToast("Student " + name + " enrolled successfully!");
+        }
+
+        function toggleStudentStatus(id) {
+            const s = ADMIN_STATE.students.find(item => item.id === id);
+            if (s) {
+                s.status = s.status === 'active' ? 'disabled' : 'active';
+                filterStudentsList();
+                showToast("Status updated for " + s.name);
+            }
+        }
+
+        function renderImporterView(container) {
+            const sampleTxt = `Q: What is the SI unit of electric potential difference?
+A: Ampere
+B: Volt
+C: Ohm
+D: Watt
+ANS: B
+EXP: Electric potential difference is measured in Volts (V), named after Alessandro Volta.
+
+Q: Which acid is naturally present in a tomato?
+A: Oxalic acid
+B: Citric acid
+C: Methanoic acid
+D: Tartaric acid
+ANS: A
+EXP: Tomatoes are a natural source of oxalic acid.
+
+Q: The focal length of a spherical mirror is 20 cm. Its radius of curvature is:
+A: 10 cm
+B: 20 cm
+C: 40 cm
+D: 30 cm
+ANS: C
+EXP: Radius of curvature R = 2f = 2 * 20 = 40 cm.`;
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-base font-extrabold text-gray-900">Bulk TXT Question Importer</h3>
+                                <p class="text-xs text-gray-500">Paste questions in standardized format or upload a .txt file. The system automatically creates MCQs.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="loadSampleTxtToEditor()" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold text-xs transition">
+                                    Load Sample Questions
+                                </button>
+                                <button onclick="clearTxtEditor()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl font-bold text-xs transition">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Target Test Selector & File Upload -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Target Test</label>
+                                <select id="import-target-test" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:outline-none">
+                                    ${ADMIN_STATE.tests.map(t => `<option value="${t.id}">${t.title} (Class ${t.class})</option>`).join('')}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Attach .txt File</label>
+                                <input type="file" id="import-txt-file" accept=".txt" onchange="handleTxtFileUpload(event)" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-prayaas-50 file:text-prayaas-700 hover:file:bg-prayaas-100">
+                            </div>
+
+                            <div class="flex items-end">
+                                <button onclick="parseRawTxtInput()" class="w-full py-2.5 bg-prayaas-700 hover:bg-prayaas-800 text-white font-extrabold text-xs rounded-xl shadow-sm transition">
+                                    Parse & Generate Preview →
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Raw Textarea Editor -->
+                        <div class="mt-4">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 flex justify-between">
+                                <span>Questions Raw Text Data</span>
+                                <span class="text-prayaas-700 font-mono">Format: Q:, A:, B:, C:, D:, ANS:, EXP:</span>
+                            </label>
+                            <textarea id="raw-questions-textarea" rows="9" class="w-full p-4 bg-gray-50 font-mono text-xs border border-gray-200 rounded-2xl focus:outline-none focus:border-prayaas-700 focus:bg-white text-gray-800 leading-relaxed" placeholder="Paste your questions here...">${sampleTxt}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Live Question Preview & Save -->
+                    <div id="parsed-preview-container" class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4 hidden">
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-gray-900">Parsed Questions Preview</h4>
+                                <p id="parsed-count-label" class="text-xs text-gray-400">0 questions recognized</p>
+                            </div>
+                            <button onclick="commitParsedQuestions()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl font-extrabold text-xs shadow-sm transition">
+                                Save to Test Database
+                            </button>
+                        </div>
+
+                        <div id="parsed-cards-grid" class="space-y-3">
+                            <!-- Injected after parse -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadSampleTxtToEditor() {
+            const textarea = document.getElementById('raw-questions-textarea');
+            if (textarea) {
+                textarea.value = `Q: The chemical formula of rust is:
+A: FeO
+B: Fe2O3.xH2O
+C: Fe3O4
+D: FeSO4
+ANS: B
+EXP: Hydrated ferric oxide Fe2O3.xH2O is rust.
+
+Q: If power of a lens is -2.0 D, its focal length is:
+A: -50 cm
+B: -20 cm
+C: +50 cm
+D: +20 cm
+ANS: A
+EXP: f = 1/P = 1/(-2) = -0.5 m = -50 cm.`;
+                showToast("Sample text reloaded.");
+            }
+        }
+
+        function clearTxtEditor() {
+            document.getElementById('raw-questions-textarea').value = '';
+            document.getElementById('parsed-preview-container').classList.add('hidden');
+        }
+
+        function handleTxtFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('raw-questions-textarea').value = e.target.result;
+                showToast("File loaded into editor!");
+            };
+            reader.readAsText(file);
+        }
+
+        function parseRawTxtInput() {
+            const raw = document.getElementById('raw-questions-textarea').value;
+            if (!raw.trim()) {
+                alert("Please paste or upload text content first.");
+                return;
+            }
+
+            // Standard Gurukul Regex Parser
+            const blocks = raw.split(/\n\s*\n/);
+            const parsedList = [];
+
+            blocks.forEach((block, idx) => {
+                const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+                let qText = '', optA = '', optB = '', optC = '', optD = '', ans = '', exp = '';
+
+                lines.forEach(line => {
+                    if (line.match(/^Q:/i)) qText = line.replace(/^Q:/i, '').trim();
+                    else if (line.match(/^A:/i)) optA = line.replace(/^A:/i, '').trim();
+                    else if (line.match(/^B:/i)) optB = line.replace(/^B:/i, '').trim();
+                    else if (line.match(/^C:/i)) optC = line.replace(/^C:/i, '').trim();
+                    else if (line.match(/^D:/i)) optD = line.replace(/^D:/i, '').trim();
+                    else if (line.match(/^ANS:/i)) ans = line.replace(/^ANS:/i, '').trim().toUpperCase();
+                    else if (line.match(/^EXP:/i)) exp = line.replace(/^EXP:/i, '').trim();
+                });
+
+                if (qText && optA && optB && ans) {
+                    parsedList.push({
+                        qNumber: parsedList.length + 1,
+                        question: qText,
+                        options: [optA, optB, optC || 'None', optD || 'None'],
+                        correctOption: ans,
+                        explanation: exp || 'No solution provided'
+                    });
+                }
+            });
+
+            ADMIN_STATE.importedQuestionsBuffer = parsedList;
+
+            const previewContainer = document.getElementById('parsed-preview-container');
+            const countLabel = document.getElementById('parsed-count-label');
+            const cardsGrid = document.getElementById('parsed-cards-grid');
+
+            if (parsedList.length === 0) {
+                alert("Could not parse any questions. Please verify format (Q:, A:, B:, C:, D:, ANS:)");
+                previewContainer.classList.add('hidden');
+                return;
+            }
+
+            countLabel.innerText = `${parsedList.length} MCQs successfully recognized and ready to import.`;
+
+            cardsGrid.innerHTML = parsedList.map(item => `
+                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200/80 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-prayaas-100 text-prayaas-800">Q.${item.qNumber}</span>
+                        <span class="text-xs font-bold text-emerald-600">Correct: Option ${item.correctOption}</span>
+                    </div>
+                    <p class="font-extrabold text-xs text-gray-900">${item.question}</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 pt-1">
+                        <div class="bg-white p-2 rounded-lg border border-gray-100 ${item.correctOption === 'A' ? 'border-emerald-400 bg-emerald-50/30' : ''}">
+                            <span class="font-bold">A.</span> ${item.options[0]}
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-gray-100 ${item.correctOption === 'B' ? 'border-emerald-400 bg-emerald-50/30' : ''}">
+                            <span class="font-bold">B.</span> ${item.options[1]}
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-gray-100 ${item.correctOption === 'C' ? 'border-emerald-400 bg-emerald-50/30' : ''}">
+                            <span class="font-bold">C.</span> ${item.options[2]}
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-gray-100 ${item.correctOption === 'D' ? 'border-emerald-400 bg-emerald-50/30' : ''}">
+                            <span class="font-bold">D.</span> ${item.options[3]}
+                        </div>
+                    </div>
+                    ${item.explanation ? `<p class="text-[11px] text-gray-400 italic mt-1">Exp: ${item.explanation}</p>` : ''}
+                </div>
+            `).join('');
+
+            previewContainer.classList.remove('hidden');
+            previewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function commitParsedQuestions() {
+            const targetTestId = parseInt(document.getElementById('import-target-test').value);
+            const count = ADMIN_STATE.importedQuestionsBuffer.length;
+            const targetTest = ADMIN_STATE.tests.find(t => t.id === targetTestId);
+
+            if (targetTest) {
+                targetTest.questionsCount += count;
+            }
+
+            showToast(`Saved ${count} questions to ${targetTest ? targetTest.title : 'test'}!`);
+            document.getElementById('parsed-preview-container').classList.add('hidden');
+            document.getElementById('raw-questions-textarea').value = '';
+        }
+
+        function renderTestsView(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-gray-100">
+                        <div>
+                            <h3 class="text-base font-extrabold text-gray-900">Tests & Mock Exam Engine</h3>
+                            <p class="text-xs text-gray-500">Create, schedule and publish class-specific exams.</p>
+                        </div>
+                        <button onclick="openCreateTestModal()" class="bg-prayaas-700 hover:bg-prayaas-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                            <i class="ph ph-plus-circle text-base"></i> Create New Test
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${ADMIN_STATE.tests.map(t => `
+                            <div class="p-4 rounded-2xl border border-gray-200/80 bg-white hover:border-prayaas-300 transition flex flex-col justify-between gap-3">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-prayaas-100 text-prayaas-800">
+                                                Class ${t.class}
+                                            </span>
+                                            <span class="text-[10px] font-semibold text-gray-400">${t.subject}</span>
+                                        </div>
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${t.status === 'published' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                                            ${t.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <h4 class="font-extrabold text-sm text-gray-900 leading-snug">${t.title}</h4>
+                                    <p class="text-xs text-gray-400 mt-1">${t.duration} Mins • ${t.totalMarks} Marks • ${t.questionsCount} Questions</p>
+                                </div>
+
+                                <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                                    <button onclick="toggleTestPublish(${t.id})" class="font-bold ${t.status === 'published' ? 'text-amber-600' : 'text-emerald-600'} hover:underline">
+                                        ${t.status === 'published' ? 'Move to Draft' : 'Publish Live'}
+                                    </button>
+                                    <button onclick="navigateTo('importer')" class="font-bold text-prayaas-700 hover:underline">
+                                        Import Questions →
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Create Test Modal -->
+                <div id="create-test-modal" class="fixed inset-0 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+                    <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-extrabold text-sm text-gray-900">Create New Exam</h4>
+                            <button onclick="closeCreateTestModal()" class="text-gray-400 hover:text-gray-700"><i class="ph ph-x text-lg"></i></button>
+                        </div>
+                        <form onsubmit="handleCreateTest(event)" class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Test Title</label>
+                                <input type="text" id="new-test-title" required placeholder="e.g. Board Booster Science Mock 04" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-prayaas-700">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Class Assigned</label>
+                                    <select id="new-test-class" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800">
+                                        <option value="6">Class 6</option>
+                                        <option value="9">Class 9</option>
+                                        <option value="10" selected>Class 10</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Subject</label>
+                                    <input type="text" id="new-test-subject" required placeholder="Science / Maths" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Duration (Mins)</label>
+                                    <input type="number" id="new-test-duration" required value="30" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Total Marks</label>
+                                    <input type="number" id="new-test-marks" required value="40" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold">
+                                </div>
+                            </div>
+                            <div class="pt-3 flex gap-2">
+                                <button type="button" onclick="closeCreateTestModal()" class="flex-1 py-2.5 rounded-xl border border-gray-200 font-bold text-xs text-gray-600 hover:bg-gray-50">Cancel</button>
+                                <button type="submit" class="flex-1 py-2.5 rounded-xl bg-prayaas-700 hover:bg-prayaas-800 font-extrabold text-xs text-white shadow-sm">Save Exam</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openCreateTestModal() {
+            const m = document.getElementById('create-test-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeCreateTestModal() {
+            const m = document.getElementById('create-test-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function handleCreateTest(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-test-title').value.trim();
+            const cls = parseInt(document.getElementById('new-test-class').value);
+            const subject = document.getElementById('new-test-subject').value.trim();
+            const duration = parseInt(document.getElementById('new-test-duration').value);
+            const marks = parseInt(document.getElementById('new-test-marks').value);
+
+            ADMIN_STATE.tests.unshift({
+                id: Date.now(),
+                title: title,
+                class: cls,
+                subject: subject,
+                duration: duration,
+                totalMarks: marks,
+                status: "draft",
+                questionsCount: 0
+            });
+
+            closeCreateTestModal();
+            renderTestsView(document.getElementById('admin-view-mount'));
+            showToast("Test created in Draft state. Import questions next!");
+        }
+
+        function toggleTestPublish(testId) {
+            const t = ADMIN_STATE.tests.find(item => item.id === testId);
+            if (t) {
+                t.status = t.status === 'published' ? 'draft' : 'published';
+                renderTestsView(document.getElementById('admin-view-mount'));
+                showToast(`Test ${t.title} is now ${t.status}`);
+            }
+        }
+
+        function renderContentView(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Video Lectures -->
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                            <div>
+                                <h3 class="font-extrabold text-sm text-gray-900">YouTube Video Lectures</h3>
+                                <p class="text-xs text-gray-400">Distraction-free player attachments</p>
+                            </div>
+                            <button onclick="promptAddVideo()" class="bg-rose-50 text-rose-700 px-3 py-1.5 rounded-xl font-bold text-xs hover:bg-rose-100 transition">
+                                + Add Video
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            ${ADMIN_STATE.videos.map(v => `
+                                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                                            <i class="ph ph-youtube-logo text-xl"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-gray-900 truncate">${v.title}</p>
+                                            <p class="text-[11px] text-gray-400">Class ${v.class} • ${v.subject}</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-mono text-[10px] text-gray-400">${v.youtubeId}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- DPP Worksheets -->
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                            <div>
+                                <h3 class="font-extrabold text-sm text-gray-900">DPP PDF Files</h3>
+                                <p class="text-xs text-gray-400">Upload daily practice papers</p>
+                            </div>
+                            <button onclick="promptUploadDpp()" class="bg-prayaas-50 text-prayaas-700 px-3 py-1.5 rounded-xl font-bold text-xs hover:bg-prayaas-100 transition">
+                                + Upload PDF
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            ${ADMIN_STATE.dpps.map(d => `
+                                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-10 h-10 rounded-xl bg-prayaas-100 text-prayaas-700 flex items-center justify-center shrink-0">
+                                            <i class="ph ph-file-pdf text-xl"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-gray-900 truncate">${d.title}</p>
+                                            <p class="text-[11px] text-gray-400">Class ${d.class} • ${d.size}</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-mono text-[10px] text-gray-400">${d.fileName}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function promptAddVideo() {
+            const title = prompt("Enter Lecture Title:");
+            if (!title) return;
+            const ytId = prompt("Enter YouTube Video ID (e.g. kJQP7kiw5Fk):");
+            if (!ytId) return;
+            const cls = parseInt(prompt("Assign Class (6, 9 or 10):", "10"));
+
+            ADMIN_STATE.videos.unshift({
+                id: Date.now(),
+                title: title,
+                class: cls || 10,
+                subject: "Core",
+                youtubeId: ytId
+            });
+            renderContentView(document.getElementById('admin-view-mount'));
+            showToast("Video lecture added!");
+        }
+
+        function promptUploadDpp() {
+            const title = prompt("Enter DPP Title:");
+            if (!title) return;
+            const cls = parseInt(prompt("Assign Class (6, 9 or 10):", "10"));
+
+            ADMIN_STATE.dpps.unshift({
+                id: Date.now(),
+                title: title,
+                class: cls || 10,
+                subject: "Practice",
+                fileName: `dpp_${Date.now()}.pdf`,
+                size: "1.4 MB"
+            });
+            renderContentView(document.getElementById('admin-view-mount'));
+            showToast("DPP PDF registered!");
+        }
+
+        function renderSuspensionsView(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                        <div>
+                            <h3 class="text-base font-extrabold text-gray-900">Anti-Cheating Violations & Reattempt Approvals</h3>
+                            <p class="text-xs text-gray-500">Students whose exams were suspended due to tab switching or minimizing the app.</p>
+                        </div>
+                        <span class="px-2.5 py-1 bg-rose-50 text-rose-700 font-extrabold text-xs rounded-xl">
+                            ${ADMIN_STATE.suspensions.length} Pending
+                        </span>
+                    </div>
+
+                    ${ADMIN_STATE.suspensions.length === 0 ? `
+                        <div class="text-center py-12 text-gray-400 text-xs">No pending test suspensions. All sessions clean!</div>
+                    ` : `
+                        <div class="space-y-3">
+                            ${ADMIN_STATE.suspensions.map(s => `
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-extrabold text-sm text-gray-900">${s.studentName}</span>
+                                            <span class="font-mono text-xs text-gray-400">(${s.studentId})</span>
+                                            <span class="text-[10px] font-extrabold bg-prayaas-100 text-prayaas-800 px-2 py-0.5 rounded">Class ${s.class}</span>
+                                        </div>
+                                        <p class="text-xs font-semibold text-gray-700 mt-1">${s.testTitle}</p>
+                                        <p class="text-xs text-rose-600 font-bold mt-0.5"><i class="ph ph-warning-circle inline"></i> ${s.reason} • <span class="text-gray-400 font-normal">${s.time}</span></p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button onclick="resolveSuspension(${s.id}, 'resume')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold shadow-sm transition">
+                                            Approve: Resume Time
+                                        </button>
+                                        <button onclick="resolveSuspension(${s.id}, 'fresh')" class="px-3.5 py-2 bg-prayaas-700 hover:bg-prayaas-800 text-white rounded-xl text-xs font-extrabold shadow-sm transition">
+                                            Fresh Attempt
+                                        </button>
+                                        <button onclick="resolveSuspension(${s.id}, 'reject')" class="px-3.5 py-2 bg-gray-200 hover:bg-rose-100 text-gray-700 hover:text-rose-700 rounded-xl text-xs font-bold transition">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function resolveSuspension(suspensionId, action) {
+            const idx = ADMIN_STATE.suspensions.findIndex(s => s.id === suspensionId);
+            if (idx !== -1) {
+                const s = ADMIN_STATE.suspensions[idx];
+                ADMIN_STATE.suspensions.splice(idx, 1);
+                document.getElementById('badge-suspensions').innerText = ADMIN_STATE.suspensions.length;
+                renderSuspensionsView(document.getElementById('admin-view-mount'));
+                showToast(`Resolved for ${s.studentName}: Action [${action.toUpperCase()}] executed.`);
+            }
+        }
+
+        function renderLeaderboardView(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-gray-100">
+                        <div>
+                            <h3 class="text-base font-extrabold text-gray-900">Leaderboard & Cron Status</h3>
+                            <p class="text-xs text-gray-500">Automated SQL Rank Rebuilder (runs every 10 mins on Hostinger).</p>
+                        </div>
+                        <button onclick="triggerQuickRebuild()" class="bg-prayaas-700 hover:bg-prayaas-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition">
+                            <i class="ph ph-lightning text-base"></i> Rebuild Rankings Now
+                        </button>
+                    </div>
+
+                    <div class="bg-prayaas-50/50 p-4 rounded-2xl border border-prayaas-100 text-xs text-prayaas-900 space-y-2">
+                        <div class="flex items-center gap-2 font-bold">
+                            <i class="ph ph-clock-countdown text-prayaas-700 text-base"></i>
+                            <span>Scheduled Cron Command (hPanel):</span>
+                        </div>
+                        <pre class="bg-white p-3 rounded-xl border border-prayaas-200 font-mono text-[11px] text-gray-700 overflow-x-auto">/usr/bin/php /home/uXXXXXX/private/cron/rebuild_leaderboard.php</pre>
+                        <p class="text-[11px] text-gray-500">Calculates class-wise average percentage and updates both <code>leaderboard_class</code> and <code>leaderboard_overall</code> without slowing down student devices.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-3">Live Top Ranks Snapshot</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-200/70">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Class 6 Leader</span>
+                                <p class="font-extrabold text-sm text-gray-900 mt-1">Ananya Dixit</p>
+                                <p class="text-xs font-bold text-prayaas-700">88.0% Accuracy</p>
+                            </div>
+                            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-200/70">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Class 9 Leader</span>
+                                <p class="font-extrabold text-sm text-gray-900 mt-1">Devansh Roy</p>
+                                <p class="text-xs font-bold text-prayaas-700">95.2% Accuracy</p>
+                            </div>
+                            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-200/70">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Class 10 Leader</span>
+                                <p class="font-extrabold text-sm text-gray-900 mt-1">Aarav Sharma</p>
+                                <p class="text-xs font-bold text-prayaas-700">96.4% Accuracy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function triggerQuickRebuild() {
+            showToast("Cron script triggered! Class & Gurukul overall ranks updated.");
+        }
+
+        function adminLogout() {
+            if (confirm("Logout of Prayaas Gurukul Admin Console?")) {
+                window.location.href = "../index.html";
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('admin-toast');
+            const text = document.getElementById('toast-text');
+            text.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Initialize Admin view on load
+        window.addEventListener('DOMContentLoaded', () => {
+            navigateTo('dashboard');
+        });
+    </script>
+</body>
+</html>
